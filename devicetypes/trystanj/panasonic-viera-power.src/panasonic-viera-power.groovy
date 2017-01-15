@@ -65,3 +65,12 @@ def push() {
  	
     log.debug("Triggered HTTP request to TV")
 }
+
+// We don't really need these handler for SmartThings, but external services need the on/off hook (e.g. Google Home calls the off method)
+def off() {
+	push()
+}
+
+def on() {
+    push()
+}
