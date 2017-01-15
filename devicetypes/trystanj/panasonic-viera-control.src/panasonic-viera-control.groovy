@@ -1,16 +1,19 @@
 /*
-* Author: trystanj
+* Author: Trystan Johnson
 *
-* source: https://community.smartthings.com/t/beta-release-uri-switch-device-handler-for-controlling-items-via-http-calls/37842/9
+* original source: https://community.smartthings.com/t/beta-release-uri-switch-device-handler-for-controlling-items-via-http-calls/37842/9
 * 
 * resources for tv:
 *   - http://pastebin.com/wQJPKLbU
 *   - https://github.com/samuelmatis/viera-control-v2/blob/master/app/index.html
+*
+* TODO: Allow Google Home / IFTTT to pass in words - "Off", "Mute", "Change Channel to NBC", etc
+*
 * Device Handler
 */
 
 metadata {
-    definition (name: "TV Switch", namespace: "trystan", author: "Trystan Johnson") {
+    definition (name: "TV Switch", namespace: "trystanj", author: "Trystan Johnson") {
         capability "Actuator"
         capability "Switch"
         capability "Momentary"
