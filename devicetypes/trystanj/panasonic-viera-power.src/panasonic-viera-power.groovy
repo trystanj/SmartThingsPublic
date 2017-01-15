@@ -13,7 +13,7 @@
 */
 
 metadata {
-    definition (name: "TV Switch", namespace: "trystanj", author: "Trystan Johnson") {
+    definition (name: "Panasonic Viera Power", namespace: "trystanj", author: "Trystan Johnson") {
         capability "Actuator"
         capability "Switch"
         capability "Momentary"
