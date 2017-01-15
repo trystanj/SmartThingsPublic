@@ -14,10 +14,8 @@
 
 metadata {
     definition (name: "Panasonic Viera Power", namespace: "trystanj", author: "Trystan Johnson") {
-        capability "Actuator"
         capability "Switch"
         capability "Momentary"
-        capability "Sensor"
     }
 
     // simulator metadata
