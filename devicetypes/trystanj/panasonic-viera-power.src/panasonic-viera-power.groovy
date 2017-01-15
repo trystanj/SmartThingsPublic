@@ -8,13 +8,14 @@
 *   - https://github.com/samuelmatis/viera-control-v2/blob/master/app/index.html
 *
 * TODO: Allow Google Home / IFTTT to pass in words - "Off", "Mute", "Change Channel to NBC", etc
+* Current IFTTT only seems to be able to trigger a binary switch
 *
 * Device Handler
 */
 
 metadata {
     definition (name: "Panasonic Viera Power", namespace: "trystanj", author: "Trystan Johnson") {
-        capability "Switch"
+    	capability "Switch"
         capability "Momentary"
     }
 
@@ -31,38 +32,36 @@ metadata {
 		main "switch"
 		details "switch"
     }
+    
+    // get the ip:port from settings (definitions: http://docs.smartthings.com/en/latest/device-type-developers-guide/device-preferences.html)
+    preferences {
+    	input name: "ipAddress", type: "text", title: "TV IP Address", description: "Local (in-network) IP of the TV", defaultValue: "192.168.", required: true, displayDuringSetup: true
+        input name: "port", type: "number", title: "TV port", description: "Port to send commands to", defaultValue: 55000, required: true, displayDuringSetup: true
+        
+        // "mute" can be useful for testing without having to turn the tv back on
+        input name: "command", type: "enum", title: "Command", description: "Command to send", options: ["Power", "Mute"], required: true, displayDuringSetup: true
+    }
 }
 
 def parse(String description) {
 }
 
 def push() {
-	//def command = "NRC_MUTE-ONOFF" // used for testing without having to turn the tv back on
-    def command = "NRC_POWER-ONOFF"
-  	def result = new physicalgraph.device.HubAction(
-        method: "POST",
-        path: "/nrc/control_0",
-        headers: [
-            HOST: "192.168.0.106:55000",
-            SOAPAction: "\"urn:panasonic-com:service:p00NetworkControl:1#X_SendKey\"",
-            Connection: "close"
-        ],
-        body: "<?xml version=\"1.0\" encoding=\"utf-8\"?><s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\"><s:Body><u:X_SendKey xmlns:u=\"urn:panasonic-com:service:p00NetworkControl:1\"><X_KeyEvent>${command}</X_KeyEvent></u:X_SendKey></s:Body></s:Envelope>"
-    )
+    def command = "NRC_$command-ONOFF".toUpperCase()
     
+    def result = new physicalgraph.device.HubSoapAction(
+        path:    "/nrc/control_0",
+        urn:     "urn:panasonic-com:service:p00NetworkControl:1",
+        action:  "X_SendKey",
+        body:    [X_KeyEvent: command],
+        headers: [Host: "$ipAddress:$port", CONNECTION: "close"]
+    )
+        
     sendHubCommand(result)
     
 	sendEvent(name: "switch", value: "on", isStateChange: true, displayed: false)
 	sendEvent(name: "switch", value: "off", isStateChange: true, displayed: false)
 	sendEvent(name: "momentary", value: "pushed", isStateChange: true)
-}
-
-def off() {
-	log.debug("turning off")
-	push()
-}
-
-def on() {
-	log.debug("turning on")
-    push()
+ 	
+    log.debug("Triggered HTTP request to TV")
 }
